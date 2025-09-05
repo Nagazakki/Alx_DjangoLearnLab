@@ -1,9 +1,10 @@
 # LibraryProject
+
 A Django-based library management system for learning purposes.
 
 ## Features
 - Book management
-- User authentication
+- User authentication  
 - Admin interface
 
 ## Setup
