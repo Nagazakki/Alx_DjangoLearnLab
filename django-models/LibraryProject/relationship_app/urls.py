@@ -13,3 +13,12 @@ urlpatterns = [
     # Class-based view (detail page for a specific library)
     path('libraries/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
 ]
+from django.urls import path
+from .views import register, CustomLoginView, CustomLogoutView
+
+urlpatterns = [
+    # Authentication URLs using Django's built-in views and forms
+    path('login/', CustomLoginView.as_view(), name='login'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'), 
+    path('register/', register, name='register'),
+]
