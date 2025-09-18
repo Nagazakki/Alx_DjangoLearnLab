@@ -87,3 +87,11 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTH_USER_MODEL = 'LibraryProject.CustomUser'  # Replace 'your_app' with your app name
+
+# For profile photos
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTH_USER_MODEL = 'LibraryProject.CustomUser'

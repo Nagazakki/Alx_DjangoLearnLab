@@ -30,3 +30,14 @@ class CustomUserAdmin(UserAdmin):
             )
         return "No photo"
     profile_photo_preview.short_description = 'Profile Photo'
+
+class CustomUserAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        ('Custom Fields', {'fields': ('date_of_birth', 'profile_photo')}),
+    )
+
+@admin.register(CustomUser)
+class CustomUserAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        ('Custom Fields', {'fields': ('date_of_birth', 'profile_photo')}),
+    )
