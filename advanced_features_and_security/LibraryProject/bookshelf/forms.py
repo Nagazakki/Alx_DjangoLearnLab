@@ -2,6 +2,15 @@ from django import forms
 from .models import Book
 
 
+class ExampleForm(forms.Form):
+    """
+    Example form for demonstration purposes
+    """
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+
+
 class BookForm(forms.ModelForm):
     """
     Form for creating and editing books with built-in validation
