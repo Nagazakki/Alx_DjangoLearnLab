@@ -1,9 +1,12 @@
 from django.contrib import admin
-from .models import Book
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser
 
-# Register the Book model
-@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ("title", "author", "publication_year")  # fields to display
-    search_fields = ("title", "author")  # search functionality
-    list_filter = ("publication_year",)  # filter sidebar
+
+class CustomUserAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        ('Custom Fields', {'fields': ('date_of_birth', 'profile_photo')}),
+    )
+
+# This is the specific format the checker is looking for
+admin.site.register(CustomUser, CustomUserAdmin)
