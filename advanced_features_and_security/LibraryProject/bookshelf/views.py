@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from .models import Book
-
+from .forms import ExampleForm
 
 @permission_required('bookshelf.can_view', raise_exception=True)
 def book_list(request):
