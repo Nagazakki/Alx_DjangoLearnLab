@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import CustomUser, Book
 
 
 class CustomUserAdmin(UserAdmin):
@@ -10,3 +10,4 @@ class CustomUserAdmin(UserAdmin):
 
 # This is the specific format the checker is looking for
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Book)
