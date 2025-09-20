@@ -1,17 +1,14 @@
+import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-your-secret-key-here-change-in-production'
+SECRET_KEY = 'django-insecure-change-this-in-production'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*']
+ALLOWED_HOSTS = []
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -19,7 +16,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'accounts',
     'bookshelf',
 ]
 
@@ -31,7 +27,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bookshelf.middleware.CSPMiddleware'
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -54,7 +49,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
-# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -62,16 +56,12 @@ DATABASES = {
     }
 }
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 8,
-        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -81,37 +71,76 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-
-# Default primary key field type
+STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Custom User Model
+# Custom User Model Configuration
 AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
-# Media files (uploads)
+# Media files configuration
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-# Security Settings
-DEBUG = False  # Set to False in production
 
-# Browser security headers
-SECURE_BROWSER_XSS_FILTER = True
-X_FRAME_OPTIONS = 'DENY'
-SECURE_CONTENT_TYPE_NOSNIFF = True
+# =============================================================================
+# HTTPS SECURITY CONFIGURATION
+# =============================================================================
 
-# HTTPS-only cookies (for production with HTTPS)
-CSRF_COOKIE_SECURE = True
+# Step 1: HTTPS Enforcement Settings
+# Force all HTTP requests to redirect to HTTPS
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS) configuration
+# Instructs browsers to only access the site via HTTPS for 1 year (31536000 seconds)
+SECURE_HSTS_SECONDS = 31536000
+
+# Apply HSTS policy to all subdomains
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Allow browsers to preload the HSTS policy for faster initial connections
+SECURE_HSTS_PRELOAD = True
+
+# Step 2: Secure Cookie Settings
+# Ensure session cookies are only transmitted over HTTPS connections
 SESSION_COOKIE_SECURE = True
 
-# Additional security settings
-SECURE_HSTS_SECONDS = 3600
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# Ensure CSRF cookies are only transmitted over HTTPS connections
+CSRF_COOKIE_SECURE = True
+
+# Prevent JavaScript access to session cookies (XSS protection)
+SESSION_COOKIE_HTTPONLY = True
+
+# Prevent JavaScript access to CSRF cookies (XSS protection)
+CSRF_COOKIE_HTTPONLY = True
+
+# Step 3: Security Headers
+# Prevent the site from being displayed in frames/iframes (clickjacking protection)
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent browsers from MIME-sniffing responses away from declared content-type
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable browser's built-in XSS filtering
+SECURE_BROWSER_XSS_FILTER = True
+
+# Control how much referrer information is sent with requests
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# =============================================================================
+# PRODUCTION SECURITY NOTES
+# =============================================================================
+# 
+# For production deployment:
+# 1. Set DEBUG = False
+# 2. Update ALLOWED_HOSTS with your domain names
+# 3. Use environment variables for sensitive settings
+# 4. Configure proper SSL certificates
+# 5. Test all security headers using tools like:
+#    - SSL Labs: https://www.ssllabs.com/ssltest/
+#    - Security Headers: https://securityheaders.com/
+#    - HSTS Preload: https://hstspreload.org/
+# =============================================================================
