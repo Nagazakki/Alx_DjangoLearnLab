@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+</head>
+<body>
+    <h1>Book List</h1>
+    
+    <form method="get">
+        <input type="text" name="search" placeholder="Search books..." value="{{ request.GET.search }}">
+        <button type="submit">Search</button>
+    </form>
+    
+    <ul>
+        {% for book in books %}
+            <li>{{ book.title }} by {{ book.author }}</li>
+        {% empty %}
+            <li>No books found.</li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{% url 'book_create' %}">Add New Book</a>
+</body>
+</html>
