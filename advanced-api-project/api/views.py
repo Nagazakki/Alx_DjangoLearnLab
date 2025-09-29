@@ -1,19 +1,24 @@
-from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Author, Book
 from .serializers import AuthorSerializer, BookSerializer
 
-class AuthorListCreateView(generics.ListCreateAPIView):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
 
-class AuthorDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Author.objects.all()
-    serializer_class = AuthorSerializer
+@api_view(["GET"])
+def author_list(request):
+    """
+    Returns all authors with their nested books.
+    """
+    authors = Author.objects.all()
+    serializer = AuthorSerializer(authors, many=True)
+    return Response(serializer.data)
 
-class BookListCreateView(generics.ListCreateAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
 
-class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
+@api_view(["GET"])
+def book_list(request):
+    """
+    Returns all books with validation applied.
+    """
+    books = Book.objects.all()
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
