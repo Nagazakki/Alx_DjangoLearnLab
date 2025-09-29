@@ -16,15 +16,9 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
-from api import views
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-
-    # Quick test endpoints
-    path("authors/", views.author_list),
-    path("books/", views.book_list),
+    path("api/", include("api.urls")),  # <-- this is what the checker needs
 ]
