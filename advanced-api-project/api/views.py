@@ -1,35 +1,39 @@
-from django.views.generic import ListView as DjangoListView, DetailView as DjangoDetailView
-from django.views.generic.edit import CreateView as DjangoCreateView, UpdateView as DjangoUpdateView, DeleteView as DjangoDeleteView
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from .models import Book
+from .serializers import BookSerializer
 
 
-class ListView(DjangoListView):
-    model = Book
-    template_name = "books/book_list.html"  # required for Django CBVs
-    context_object_name = "books"
+# List all books (anyone can read)
+class BookListView(generics.ListAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-class DetailView(DjangoDetailView):
-    model = Book
-    template_name = "books/book_detail.html"
-    context_object_name = "book"
+# Retrieve a single book (anyone can read)
+class BookDetailView(generics.RetrieveAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-class CreateView(DjangoCreateView):
-    model = Book
-    fields = ["title", "author", "published_date"]
-    template_name = "books/book_form.html"
-    success_url = "/books/"
+# Create a new book (only authenticated users)
+class BookCreateView(generics.CreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
 
 
-class UpdateView(DjangoUpdateView):
-    model = Book
-    fields = ["title", "author", "published_date"]
-    template_name = "books/book_form.html"
-    success_url = "/books/"
+# Update an existing book (only authenticated users)
+class BookUpdateView(generics.UpdateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
 
 
-class DeleteView(DjangoDeleteView):
-    model = Book
-    template_name = "books/book_confirm_delete.html"
-    success_url = "/books/"
+# Delete a book (only authenticated users)
+class BookDeleteView(generics.DestroyAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]
