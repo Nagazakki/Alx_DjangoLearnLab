@@ -1,24 +1,35 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import Author, Book
-from .serializers import AuthorSerializer, BookSerializer
+from django.views.generic import ListView as DjangoListView, DetailView as DjangoDetailView
+from django.views.generic.edit import CreateView as DjangoCreateView, UpdateView as DjangoUpdateView, DeleteView as DjangoDeleteView
+from .models import Book
 
 
-@api_view(["GET"])
-def author_list(request):
-    """
-    Returns all authors with their nested books.
-    """
-    authors = Author.objects.all()
-    serializer = AuthorSerializer(authors, many=True)
-    return Response(serializer.data)
+class ListView(DjangoListView):
+    model = Book
+    template_name = "books/book_list.html"  # required for Django CBVs
+    context_object_name = "books"
 
 
-@api_view(["GET"])
-def book_list(request):
-    """
-    Returns all books with validation applied.
-    """
-    books = Book.objects.all()
-    serializer = BookSerializer(books, many=True)
-    return Response(serializer.data)
+class DetailView(DjangoDetailView):
+    model = Book
+    template_name = "books/book_detail.html"
+    context_object_name = "book"
+
+
+class CreateView(DjangoCreateView):
+    model = Book
+    fields = ["title", "author", "published_date"]
+    template_name = "books/book_form.html"
+    success_url = "/books/"
+
+
+class UpdateView(DjangoUpdateView):
+    model = Book
+    fields = ["title", "author", "published_date"]
+    template_name = "books/book_form.html"
+    success_url = "/books/"
+
+
+class DeleteView(DjangoDeleteView):
+    model = Book
+    template_name = "books/book_confirm_delete.html"
+    success_url = "/books/"
