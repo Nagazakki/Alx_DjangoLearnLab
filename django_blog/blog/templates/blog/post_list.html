@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Posts - Django Blog</title>
+</head>
+<body>
+    <h1>All Blog Posts</h1>
+
+    {% if posts %}
+        <ul>
+        {% for post in posts %}
+            <li>
+                <h2>{{ post.title }}</h2>
+                <p>{{ post.content|truncatewords:20 }}</p>
+                <small>Published: {{ post.published_date }}</small>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No posts available yet.</p>
+    {% endif %}
+
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>
