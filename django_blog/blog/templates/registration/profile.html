@@ -1,12 +1,11 @@
-{% extends "blog/base.html" %}
+{% extends "base.html" %}
 {% block content %}
-  <h2>Profile</h2>
-  <p>Username: {{ user.username }}</p>
-  <p>Email: {{ user.email }}</p>
-
+  <h2>My Profile</h2>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    <h3>Update User Info</h3>
     {{ u_form.as_p }}
+    <h3>Update Profile</h3>
     {{ p_form.as_p }}
     <button type="submit">Update</button>
   </form>
