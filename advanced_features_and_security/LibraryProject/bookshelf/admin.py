@@ -5,8 +5,9 @@ from .models import CustomUser, Book
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
-        ('Custom Fields', {'fields': ('date_of_birth', 'profile_photo')}),
+        ("Custom Fields", {"fields": ("date_of_birth", "profile_photo")}),
     )
+
 
 # This is the specific format the checker is looking for
 admin.site.register(CustomUser, CustomUserAdmin)
