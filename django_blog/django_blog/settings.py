@@ -126,7 +126,7 @@ STATIC_URL = '/static/'
 
 # Optional: for development, Django will also look here
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    BASE_DIR / "blog/static",
 ]
 
 MEDIA_URL = '/media/'
