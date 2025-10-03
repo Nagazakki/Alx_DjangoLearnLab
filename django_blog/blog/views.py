@@ -14,8 +14,8 @@ from .forms import (
     PostForm,
     CommentForm,
 )
-from .models import Post, Comment, Tag
-
+from .models import Post, Comment   # ✅ removed Tag import
+from taggit.models import Tag       # ✅ use taggit’s built-in Tag
 
 # --------------------
 # User Profiles
