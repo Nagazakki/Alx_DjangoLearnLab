@@ -1,0 +1,15 @@
+Blog Post CRUD (Summary)
+- Model: Post(title, content, published_date, author)
+- Forms: PostForm (ModelForm for title and content)
+- Views: Class-based views:
+  - PostListView (ListView) — /posts/
+  - PostDetailView (DetailView) — /posts/<pk>/
+  - PostCreateView (CreateView, LoginRequiredMixin) — /posts/new/
+  - PostUpdateView (UpdateView, LoginRequiredMixin, UserPassesTestMixin) — /posts/<pk>/edit/
+  - PostDeleteView (DeleteView, LoginRequiredMixin, UserPassesTestMixin) — /posts/<pk>/delete/
+- Permissions:
+  - Create: any authenticated user
+  - Update/Delete: only the post author
+- Templates:
+  - blog/post_list.html, blog/post_detail.html, blog/post_form.html, blog/post_confirm_delete.html
+- To test: run makemigrations/migrate, create superuser, runserver, test flows described above.
