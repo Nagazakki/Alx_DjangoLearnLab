@@ -1,10 +1,11 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from .views import CommentCreateView, PostByTagListView
 
 urlpatterns = [
-    path("", views.home, name="home"),  
-    path("posts/", views.post_list, name="post_list"),  
+    path("", views.home, name="home"),
+    path("posts/", views.post_list, name="post_list"),
 
     # Authentication
     path("login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
@@ -19,11 +20,14 @@ urlpatterns = [
     path("post/<int:pk>/delete/", views.PostDeleteView.as_view(), name="post_delete"),
 
     # Comments CRUD
-    path("post/<int:pk>/comments/new/", views.comment_create, name="comment_create"),
-    path("comment/<int:pk>/update/", views.CommentUpdateView.as_view(), name="comment_update"),
-    path("comment/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment_delete"),
+    path("post/<int:post_pk>/comments/new/", views.comment_create, name="comment_create"),
+    path("post/<int:post_pk>/comments/<int:pk>/edit/", views.CommentUpdateView.as_view(), name="comment_update"),
+    path("post/<int:post_pk>/comments/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment_delete"),
+    path("post/<int:pk>/comment/", CommentCreateView.as_view(), name="add-comment"),
 
-    # Tags + Search
-    path("tags/<str:tag_name>/", views.TagPostListView.as_view(), name="posts_by_tag"),
-    path("search/", views.SearchResultsView.as_view(), name="search"),
+    # Tags
+    path("tags/<slug:tag_slug>/", PostByTagListView.as_view(), name="posts_by_tag"),
+
+    # Search
+    path("search/", views.search, name="search"),
 ]
