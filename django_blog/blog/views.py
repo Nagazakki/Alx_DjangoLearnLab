@@ -8,6 +8,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post
 from .forms import PostForm
+from django.shortcuts import get_object_or_404
+from .models import Post, Comment
+from .forms import CommentForm
 
 @login_required
 def profile_view(request):
@@ -70,9 +73,29 @@ class PostListView(ListView):
 # Detail view - accessible to all
 class PostDetailView(DetailView):
     model = Post
-    template_name = "blog/post_detail.html"  # templates/blog/post_detail.html
+    template_name = "blog/post_detail.html"
     context_object_name = "post"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["comments"] = self.object.comments.all().order_by("created_at")
+        context["comment_form"] = CommentForm()
+        return context
+@login_required
+def comment_create(request, post_pk):
+    post = get_object_or_404(Post, pk=post_pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            return redirect("post_detail", pk=post.pk)
+    # If GET (or invalid POST) — show a small page (or optionally redirect)
+    return render(request, "blog/comment_form.html", {"form": form, "post": post})
+    
+    
 # Create view - only for logged in users
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -102,3 +125,25 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "blog/comment_form.html"
+
+    def get_success_url(self):
+        return reverse_lazy("post_detail", kwargs={"pk": self.object.post.pk})
+
+    def test_func(self):
+        return self.request.user == self.get_object().author
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = "blog/comment_confirm_delete.html"
+
+    def get_success_url(self):
+        return reverse_lazy("post_detail", kwargs={"pk": self.object.post.pk})
+
+    def test_func(self):
+        return self.request.user == self.get_object().author

@@ -3,7 +3,7 @@
 {% block content %}
 <article>
   <h1>{{ post.title }}</h1>
-  <p>{{ post.content }}</p>
+  <p>{{ post.content|linebreaks }}</p>
   <p><small>By {{ post.author.username }} on {{ post.published_date }}</small></p>
 
   {% if user == post.author %}
@@ -12,6 +12,40 @@
       <a href="{% url 'post_delete' post.pk %}">Delete</a>
     </p>
   {% endif %}
-  <p><a href="{% url 'posts' %}">Back to all posts</a></p>
 </article>
+
+<hr>
+<section id="comments">
+  <h2>Comments</h2>
+
+  {% if comments %}
+    <ul>
+    {% for comment in comments %}
+      <li>
+        <p>{{ comment.content|linebreaks }}</p>
+        <small>By {{ comment.author.username }} on {{ comment.created_at }}</small>
+        {% if user == comment.author %}
+          &nbsp;|&nbsp;
+          <a href="{% url 'comment_update' post.pk comment.pk %}">Edit</a>
+          &nbsp;|&nbsp;
+          <a href="{% url 'comment_delete' post.pk comment.pk %}">Delete</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>No comments yet. Be the first to comment!</p>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <h3>Leave a comment</h3>
+    <form action="{% url 'comment_create' post.pk %}" method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit">Post Comment</button>
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to post a comment.</p>
+  {% endif %}
+</section>
 {% endblock %}
