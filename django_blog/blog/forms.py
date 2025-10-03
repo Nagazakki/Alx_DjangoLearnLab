@@ -39,10 +39,9 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ["title", "content", "tags"]
         widgets = {
-            "title": forms.TextInput(attrs={"placeholder": "Post title"}),
-            "content": forms.Textarea(attrs={"rows": 10, "placeholder": "Write your post here..."}),
-            "tags": forms.SelectMultiple(),  # Let users pick multiple tags
+            "tags": TagWidget(),
         }
+
 
 
 class CommentForm(forms.ModelForm):
