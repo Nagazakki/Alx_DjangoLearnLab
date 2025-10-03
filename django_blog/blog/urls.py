@@ -1,7 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
-from .views import CommentCreateView
 
 urlpatterns = [
     path("", views.home, name="home"),  
@@ -13,18 +12,18 @@ urlpatterns = [
     path("register/", views.register, name="register"),
     path("profile/", views.profile, name="profile"),
 
-    # CRUD for posts (singular, as checker wants)
+    # CRUD for posts
     path("post/new/", views.PostCreateView.as_view(), name="post_create"),
     path("post/<int:pk>/", views.PostDetailView.as_view(), name="post_detail"),
     path("post/<int:pk>/update/", views.PostUpdateView.as_view(), name="post_update"),
     path("post/<int:pk>/delete/", views.PostDeleteView.as_view(), name="post_delete"),
-     path("post/<int:post_pk>/comments/new/", views.comment_create, name="comment_create"),
-    path("post/<int:post_pk>/comments/<int:pk>/edit/", views.CommentUpdateView.as_view(), name="comment_update"),
-    path("post/<int:post_pk>/comments/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment_delete"),
-    path('post/<int:pk>/comment/', CommentCreateView.as_view(), name='add-comment'),
+
     # Comments CRUD
-    path("post/<int:pk>/comments/new/", views.CommentCreateView.as_view(), name="comment_create"),
+    path("post/<int:pk>/comments/new/", views.comment_create, name="comment_create"),
     path("comment/<int:pk>/update/", views.CommentUpdateView.as_view(), name="comment_update"),
     path("comment/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment_delete"),
 
+    # Tags + Search
+    path("tags/<str:tag_name>/", views.TagPostListView.as_view(), name="posts_by_tag"),
+    path("search/", views.SearchResultsView.as_view(), name="search"),
 ]
