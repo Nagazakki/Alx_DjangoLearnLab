@@ -4,11 +4,10 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import authenticate
 from rest_framework.views import APIView
+from .models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer
-
-User = get_user_model()
 
 
 # --------------------
@@ -17,7 +16,7 @@ User = get_user_model()
 class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -68,13 +67,13 @@ class ProfileView(APIView):
 # User List & Follow Management
 # --------------------
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()  
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def follow(self, request, pk=None):
-        user_to_follow = get_object_or_404(User, pk=pk)
+        user_to_follow = get_object_or_404(CustomUser, pk=pk)
         if request.user == user_to_follow:
             return Response({"detail": "You cannot follow yourself."}, status=400)
         user_to_follow.followers.add(request.user)
@@ -82,7 +81,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def unfollow(self, request, pk=None):
-        user_to_unfollow = get_object_or_404(User, pk=pk)
+        user_to_unfollow = get_object_or_404(CustomUser, pk=pk)
         if request.user == user_to_unfollow:
             return Response({"detail": "You cannot unfollow yourself."}, status=400)
         user_to_unfollow.followers.remove(request.user)
@@ -96,8 +95,8 @@ class UserViewSet(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 def follow_user(request, user_id):
     try:
-        user_to_follow = User.objects.get(id=user_id)
-    except User.DoesNotExist:
+        user_to_follow = CustomUser.objects.get(id=user_id)
+    except CustomUser.DoesNotExist:
         return Response({'error': 'User not found.'}, status=404)
 
     if user_to_follow == request.user:
@@ -111,8 +110,8 @@ def follow_user(request, user_id):
 @permission_classes([IsAuthenticated])
 def unfollow_user(request, user_id):
     try:
-        user_to_unfollow = User.objects.get(id=user_id)
-    except User.DoesNotExist:
+        user_to_unfollow = CustomUser.objects.get(id=user_id)
+    except CustomUser.DoesNotExist:
         return Response({'error': 'User not found.'}, status=404)
 
     if user_to_unfollow == request.user:
