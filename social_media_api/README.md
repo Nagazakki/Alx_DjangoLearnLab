@@ -138,3 +138,68 @@ GET /api/posts/?search=keyword
 - Token authentication is required for creating, updating, or deleting.
 - Only authors can edit or delete their own posts or comments.
 - Pagination and search are automatically handled by Django REST Framework.
+
+FOLLOW & FEED FEATURE UPDATE
+================================
+
+Overview:
+Added functionality for users to follow other users and view a feed of posts from those they follow.
+
+--------------------
+1. MODELS & MIGRATIONS
+--------------------
+- Updated user model with ManyToMany field:
+  following = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
+
+Commands:
+python manage.py makemigrations accounts
+python manage.py migrate
+
+--------------------
+2. FOLLOW MANAGEMENT VIEWS (accounts/views.py)
+--------------------
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def follow_user(request, user_id):
+    user_to_follow = User.objects.get(id=user_id)
+    request.user.following.add(user_to_follow)
+    return Response({'message': f'You are now following {user_to_follow.username}.'})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unfollow_user(request, user_id):
+    user_to_unfollow = User.objects.get(id=user_id)
+    request.user.following.remove(user_to_unfollow)
+    return Response({'message': f'You unfollowed {user_to_unfollow.username}.'})
+
+--------------------
+3. FEED VIEW (posts/views.py)
+--------------------
+class FeedView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        following_users = request.user.following.all()
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
+--------------------
+4. URL ROUTES
+--------------------
+accounts/urls.py:
+  path('follow/<int:user_id>/', follow_user),
+  path('unfollow/<int:user_id>/', unfollow_user),
+
+posts/urls.py:
+  path('feed/', FeedView.as_view()),
+
+--------------------
+5. TESTING
+--------------------
+Use Postman:
+- POST /api/accounts/follow/<user_id>/
+- POST /api/accounts/unfollow/<user_id>/
+- GET /api/feed/
+
+Authentication required (Token or Session).
+
