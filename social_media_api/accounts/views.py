@@ -13,10 +13,9 @@ from .serializers import RegisterSerializer, UserSerializer
 # --------------------
 # Register
 # --------------------
-class RegisterView(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]
+class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
+    serializer_class = RegisterSerializer  
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -67,9 +66,8 @@ class ProfileView(APIView):
 # User List & Follow Management
 # --------------------
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = CustomUser.objects.all()  
+    queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def follow(self, request, pk=None):

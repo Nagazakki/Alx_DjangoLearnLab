@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "accounts",
     "posts",
+    "notifications",
 ]
 
 MIDDLEWARE = [
@@ -102,7 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
