@@ -10,6 +10,6 @@ router.register(r'comments', CommentViewSet, basename='comment')
 urlpatterns = [
     path('', include(router.urls)),
     path('feed/', FeedView.as_view(), name='feed'),
-    path('like/<int:pk>/', views.like_post, name='like_post'),      # use 'pk' to match checker
-    path('unlike/<int:pk>/', views.unlike_post, name='unlike_post'),# use 'pk' to match checker
+    path('<int:pk>/like/', views.like_post, name='like_post'),      # pk comes first
+    path('<int:pk>/unlike/', views.unlike_post, name='unlike_post'),# pk comes first
 ]
