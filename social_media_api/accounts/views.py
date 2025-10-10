@@ -1,25 +1,41 @@
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from .models import User
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer, UserSerializer
-from django.contrib.auth import get_user_model
-
 
 User = get_user_model()
 
 
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
+# --------------------
+# Register
+# --------------------
+class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+    queryset = User.objects.all()
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({
+            "user": UserSerializer(user).data,
+            "token": token.key
+        })
 
 
+# --------------------
+# Login
+# --------------------
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -30,6 +46,9 @@ class LoginView(APIView):
         return Response({'error': 'Invalid credentials'}, status=400)
 
 
+# --------------------
+# Profile
+# --------------------
 class ProfileView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -44,6 +63,10 @@ class ProfileView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
+
+# --------------------
+# User List & Follow Management
+# --------------------
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -53,20 +76,22 @@ class UserViewSet(viewsets.ModelViewSet):
     def follow(self, request, pk=None):
         user_to_follow = get_object_or_404(User, pk=pk)
         if request.user == user_to_follow:
-            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"detail": "You cannot follow yourself."}, status=400)
         user_to_follow.followers.add(request.user)
-        return Response({"detail": f"You are now following {user_to_follow.username}."}, status=status.HTTP_200_OK)
+        return Response({"detail": f"You are now following {user_to_follow.username}."}, status=200)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def unfollow(self, request, pk=None):
         user_to_unfollow = get_object_or_404(User, pk=pk)
         if request.user == user_to_unfollow:
-            return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"detail": "You cannot unfollow yourself."}, status=400)
         user_to_unfollow.followers.remove(request.user)
-        return Response({"detail": f"You have unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
+        return Response({"detail": f"You have unfollowed {user_to_unfollow.username}."}, status=200)
 
+
+# --------------------
+# Optional Direct Endpoints
+# --------------------
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def follow_user(request, user_id):
