@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
-from notifications.utils import create_notification
+from notifications.models import Notification
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -42,7 +42,7 @@ class FeedView(APIView):
 
     def get(self, request):
         user = request.user
-        following_users = user.following.all()  # Assuming a Follow relation
+        following_users = user.following.all()  # assuming a Follow relation exists
         posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -55,12 +55,13 @@ class FeedView(APIView):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def like_post(request, pk):
-    """Like a post (DRF API-style)."""
+    """Like a post (DRF API-style)"""
     post = generics.get_object_or_404(Post, pk=pk)
     like, created = Like.objects.get_or_create(user=request.user, post=post)
 
-    if created:
-        create_notification(
+    if created and post.author != request.user:
+        # Directly create the Notification
+        Notification.objects.create(
             actor=request.user,
             recipient=post.author,
             verb='liked your post',
@@ -74,7 +75,7 @@ def like_post(request, pk):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def unlike_post(request, pk):
-    """Unlike a post (DRF API-style)."""
+    """Unlike a post (DRF API-style)"""
     post = generics.get_object_or_404(Post, pk=pk)
     like = Like.objects.filter(user=request.user, post=post).first()
 
