@@ -4,9 +4,11 @@ import dj_database_url
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['yourdomain.com', 'api.yourdomain.com', 'yourapp.onrender.com', 'yourapp.fly.dev']
+ALLOWED_HOSTS = ["Nagazakki.onrender.com"]
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+SECRET_KEY = os.environ.get("@Holaputa5")
+
+CSRF_TRUSTED_ORIGINS = ["https://Nagazakki.onrender.com"]
 
 DATABASES = {
     'default': dj_database_url.config(
