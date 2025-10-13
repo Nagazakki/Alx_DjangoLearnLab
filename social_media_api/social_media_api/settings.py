@@ -2,3 +2,7 @@ from .settings.base import *
 
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
+
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_SSL_REDIRECT = True
