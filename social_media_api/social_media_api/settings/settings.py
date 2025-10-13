@@ -1,9 +1,7 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 import dj_database_url
 
-load_dotenv()  # Load from .env file if exists
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
